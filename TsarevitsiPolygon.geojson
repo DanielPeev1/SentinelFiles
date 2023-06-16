@@ -1,0 +1,8 @@
+{
+"type": "FeatureCollection",
+"name": "TsarevitsiPolygon",
+"crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },
+"features": [
+{ "type": "Feature", "properties": { "Name": "Sunflower", "description": null, "timestamp": null, "begin": null, "end": null, "altitudeMode": null, "tessellate": -1, "extrude": 0, "visibility": -1, "drawOrder": null, "icon": null }, "geometry": { "type": "Polygon", "coordinates": [ [ [ 27.548119, 43.0812713, 0.0 ], [ 27.5541057, 43.0852207, 0.0 ], [ 27.5456299, 43.0914262, 0.0 ], [ 27.5461878, 43.0827602, 0.0 ], [ 27.5464131, 43.0823606, 0.0 ], [ 27.5468101, 43.0820236, 0.0 ], [ 27.5473358, 43.0816318, 0.0 ], [ 27.548119, 43.0812713, 0.0 ] ] ] } }
+]
+}
