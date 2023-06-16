@@ -27,12 +27,23 @@ hours = timedelta (hours = 24)
 
 #This specifies the vector polygon which we use to specify the geolocation of the images.
 #This polygon approximately encompasses an area in and around the territory of Bulgaria.
-footprint = geojson_to_wkt(read_geojson('BulgariaMap.geojson'))
+kmlFile = "<fileName>"
+srcDS = gdal.OpenEx(kmlFile)
+ds = gdal.VectorTranslate('farm.geojson', srcDS, format='GeoJSON')
+#Dereference and close dataset so the file is written
+del ds 
+
+#This specifies the vector polygon which we use to specify the geolocation of the images.
+#This polygon approximately encompasses an area in and around the territory of Bulgaria.
+footprint = geojson_to_wkt(read_geojson('farm.geojson'))
 
 #This line queries Sentinel-2 images which follow cetain criteria and converts the
 # resulting dictionary with their properties into a Pandas dataframe
 products_df = api.to_dataframe(api.query (footprint, date= (date(2023, 4, 1), date(2023, 4, 1) + 25 * hours),
                                           platformname='Sentinel-2', cloudcoverpercentage=(0, 50)))
+if products_df.empty:
+    raise Exception("No Sentinel 2 data was found in area")
+
 print (products_df)
 
 #This loop goes through the images received from the query and outputs the id,
@@ -48,10 +59,15 @@ for i in products_df['size']:
         print(products_df.iloc[j]['size'])
     j = j + 1
 
-#This line queries images from the Sentinel-1 satellite and
-# converts the result into a Pandas Dataframe
-products_df2 = api.to_dataframe(api.query (date= (date(2023, 5, 1), date(2023, 5, 1) + 5* hours),
-                                           platformname='Sentinel-1'))
+#This line queries images from the Sentinel-1 satellite
+products2 = api.query (footprint, date= (date(2023, 5, 1), date(2023, 5, 1) + 10* hours),
+                                           platformname='Sentinel-1')
+#Convert to pandas dataframe
+products_df2 = api.to_dataframe(products2)
+                                         
+
+if products_df2.empty:
+    raise Exception("No Sentinel 1 data was found in area")
 
 #This loop outputs some of their properties
 j = 0
@@ -66,6 +82,8 @@ for i in products_df2['size']:
     print ('-------------------------------------------------------------------------------------------------------------------------')
     j += 1
 
+
+#api.download_all(products2)
 #A list of the names of all properties of the images
 print (products_df2.columns)
 #Sample code for downloading a specific image by its id
