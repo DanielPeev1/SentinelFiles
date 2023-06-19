@@ -14,9 +14,9 @@ def scaleToRGB(val):
     return (val - min_val) * 255/(max_val - min_val)
 
 # co-polarization file such as hh or vv
-co_pol_file = "../S1A_IW_GRDH_1SDV_20230507T160047_20230507T160112_048430_05D353_F6A5.SAFE/measurement/s1a-iw-grd-vh-20230507t160047-20230507t160112-048430-05d353-002.tiff"
+co_pol_file = "./S1A_IW_GRDH_1SDV_20230507T160047_20230507T160112_048430_05D353_F6A5.SAFE/measurement/s1a-iw-grd-vh-20230507t160047-20230507t160112-048430-05d353-002.tiff"
 # cross polarization file such as hv or vh
-cross_pol_file = "../S1A_IW_GRDH_1SDV_20230507T160047_20230507T160112_048430_05D353_F6A5.SAFE/measurement/s1a-iw-grd-vv-20230507t160047-20230507t160112-048430-05d353-001.tiff"
+cross_pol_file = "./S1A_IW_GRDH_1SDV_20230507T160047_20230507T160112_048430_05D353_F6A5.SAFE/measurement/s1a-iw-grd-vv-20230507t160047-20230507t160112-048430-05d353-001.tiff"
 
 co_pol = rasterio.open(co_pol_file) 
 cross_pol = rasterio.open(cross_pol_file) 
@@ -47,7 +47,7 @@ with rasterio.open('color_sar.tiff','w', **profile) as rgb:
     rgb.close()
 
 # boundary for the field in Varna
-boundary = gpd.read_file(r'./farm.geojson')
+boundary = gpd.read_file(r'./varna.geojson')
 bound_crs = boundary.to_crs({'init': 'epsg:4326'})
 
 with rasterio.open('color_sar.tiff') as src:
