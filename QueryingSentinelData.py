@@ -17,6 +17,7 @@ from sentinelsat import SentinelAPI, read_geojson, geojson_to_wkt
 from datetime import date, timedelta
 import numpy as np
 import pandas as pd
+from osgeo import gdal, ogr
 
 #In this line you have to enter your username and password for the Copernicus system
 api = SentinelAPI('your_username', 'your_password', 'https://apihub.copernicus.eu/apihub')
