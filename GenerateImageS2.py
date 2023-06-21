@@ -28,7 +28,7 @@ with rasterio.open('s2_color.tiff','w',driver='GTiff',
 
 # boundary for the field in Varna
 boundary = gpd.read_file(r'./varna.geojson')
-bound_crs = boundary.to_crs({'init': 'epsg:32635'})
+bound_crs = boundary.to_crs('epsg:32635')
 
 with rasterio.open('s2_color.tiff') as src:
     # uses the boundary and source image to crop the field
