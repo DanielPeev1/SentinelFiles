@@ -17,7 +17,7 @@ import numpy as np
 dir = "./data-s2"
 tempZip = "./unzip"
 boundry = "./farm.geojson"
-cropped_data_folder = "./cropped-data-s2"
+cropped_data_folder = "./cropped-ndvi-s2"
 tempFile = "temp.tiff"
 ndvi = True
 
