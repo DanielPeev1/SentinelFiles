@@ -62,7 +62,13 @@ if file.endswith("kml"):
 # This polygon approximately encompasses an area in and around the territory of Bulgaria.
 footprint = geojson_to_wkt(read_geojson(file))
 
+products = []
+
 # This line queries Sentinel images which follow cetain criteria and later downloads them
-products = api.query(footprint, date= (date(int(start[2]), int(start[1]), int(start[0])), date(int(end[2]), int(end[1]), int(end[0]))),
+if platform == "Sentinel-2":
+  products = api.query(footprint, date= (date(int(start[2]), int(start[1]), int(start[0])), date(int(end[2]), int(end[1]), int(end[0]))),
+                                          platformname=platform, producttype=ptype, cloudcoverpercentage=(0, 90))
+else: 
+  products = api.query(footprint, date= (date(int(start[2]), int(start[1]), int(start[0])), date(int(end[2]), int(end[1]), int(end[0]))),
                                           platformname=platform, producttype=ptype)
 api.download_all(products, dir)
