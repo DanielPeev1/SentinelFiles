@@ -10,7 +10,7 @@ Unless required by applicable law or agreed to in writing, software
 distributed under the License is distributed on an "AS IS" BASIS,
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
-limitations under the License.''' 
+limitations under the License.'''
 
 from sentinelsat import SentinelAPI, read_geojson, geojson_to_wkt
 from datetime import date, timedelta
@@ -106,7 +106,7 @@ for image1 in sentinel1list:
 
         if (abs(image1[2] - image2[2]) < timedelta(days=4)):
             #This is the most useful Sentinel-1 image format
-            if (image1[3][4:11] == 'IW_GRDH'):
+            if (image1[3][4:11] == 'IW_GRDH' and image2[3][8]=='2'):
 
                 api.download(id=image1[0], directory_path="D:\Sentinel1")
                 os.chdir('D:\Sentinel1')
@@ -130,20 +130,16 @@ for image1 in sentinel1list:
                 # setting metadata/profile data for the tiff file we are about to create
                 profile = co_pol.profile
                 profile["photometric"] = "RGB"
-                # number of bands. They are three cause of RGB
-                profile["count"] = 3
+                # number of bands. They are two
+                profile["count"] = 2
                 # coordinate referencing system
                 profile["crs"] = gcp_crs
                 profile["driver"] = "GTiff"
                 profile["transform"] = affine_transform
                 with rasterio.open(r'D:\color_sar' + str(k) + '.tiff', 'w', **profile) as rgb:
-                    cross_pol_val = scaleToRGB(cross_pol.read(1))
-                    co_pol_val = scaleToRGB(co_pol.read(1))
-                    ratio = scaleToRGB(cross_pol_val // (co_pol_val + eps))
 
-                    rgb.write(ratio, 3)
-                    rgb.write(co_pol_val, 2)
-                    rgb.write(cross_pol_val, 1)
+                    rgb.write(co_pol.read(1), 2)
+                    rgb.write(cross_pol.read(1), 1)
                     rgb.close()
 
                 # boundary for the field in Varna
@@ -154,8 +150,11 @@ for image1 in sentinel1list:
 
                     # Cutting out only the part covered by the polygon
                     out_image, out_transform = mask(src,
-                                                    bound_crs.geometry, crop=True)
 
+                                                    bound_crs.geometry, crop=True)
+                #Unifying the dimensions of all input images
+                out_image = np.resize (out_image, (2, 120, 80))
+                print(out_image.shape)
                 inputs.append(out_image)
                 os.chdir("D:\PythonProjects")
                 api.download(image2[0], directory_path="D:/Sentinel2")
@@ -179,7 +178,17 @@ for image1 in sentinel1list:
                 # Cutting out only the part covered by the polygon
                 out_red, out_red_transform = mask(red_file, boundary.geometry, crop=True)
                 out_near_infrared, out_near_infrared_transform = mask(near_infrared_file, boundary.geometry, crop=True)
+                #Calculating the ndvi index
+                out_image = (out_near_infrared - out_red)/(out_near_infrared + out_red)
+                #Converting potential nan values to 0
+                out_image = np.nan_to_num (out_image, 0)
                 labels.append(out_image)
+                print (out_image.shape)
                 k += 1
                 break
 
+print (inputs)
+print (labels)
+#Saving the genererated lists to files
+np.save("D:\TsarevitsiInputs", np.array(inputs))
+np.save ("D:\TsarevitsiLabels", np.array (labels))
