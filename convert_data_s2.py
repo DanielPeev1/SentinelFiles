@@ -17,7 +17,8 @@ import numpy as np
 dir = "./data-s2"
 tempZip = "./unzip"
 boundry = "./farm.geojson"
-cropped_data_folder = "./cropped-ndvi-s2"
+cropped_ndvi_folder = "./cropped-ndvi-s2"
+cropped_raw_folder = "./cropped-raw-s2"
 tempFile = "temp.tiff"
 ndvi = True
 
@@ -97,7 +98,11 @@ for fileName in tqdm(fileNames):
         elif re.match("^.*B03_10m.jp2$", imgName):
             greenImg = imgDataFolder + "/" + imgName
 
-    destinationFile = cropped_data_folder + "/" + acquisiotionDate + ".tiff"
+        if not os.path.exists(cropped_raw_folder + "/" + acquisiotionDate):
+            os.mkdir(cropped_raw_folder + "/" + acquisiotionDate)
+        crop(imgDataFolder + "/" + imgName, cropped_raw_folder + "/"+ acquisiotionDate + "/" + imgName)
+
+    destinationFile = cropped_ndvi_folder + "/" + acquisiotionDate + ".tiff"
     if ndvi:
         generateNDVI(redImg, nirImg, tempFile)
     else:
