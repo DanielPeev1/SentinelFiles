@@ -45,11 +45,12 @@ def generateNDVI(red_file, nir_file, destFile):
 
     with rasterio.open(destFile,'w',driver='GTiff',
                     width=red.width, height=red.height, count=1,
-                    crs=red.crs,transform=red.transform, dtype=red.dtypes[0]) as ndvi:
+                    crs=red.crs,transform=red.transform, dtype="float32") as ndvi:
         red_val = red.read(1)
         nir_val = nir.read(1)
 
-        ndvi_val = (nir_val - red_val)/(red_val + nir_val + eps)
+        ndvi_val = (nir_val - red_val)/(red_val + nir_val)
+        ndvi_val = np.nan_to_num(ndvi_val)
         ndvi.write(ndvi_val,1) 
         ndvi.close()
 
@@ -98,9 +99,9 @@ for fileName in tqdm(fileNames):
         elif re.match("^.*B03_10m.jp2$", imgName):
             greenImg = imgDataFolder + "/" + imgName
 
-        if not os.path.exists(cropped_raw_folder + "/" + acquisiotionDate):
-            os.mkdir(cropped_raw_folder + "/" + acquisiotionDate)
-        crop(imgDataFolder + "/" + imgName, cropped_raw_folder + "/"+ acquisiotionDate + "/" + imgName)
+        #if not os.path.exists(cropped_raw_folder + "/" + acquisiotionDate):
+        #    os.mkdir(cropped_raw_folder + "/" + acquisiotionDate)
+        #crop(imgDataFolder + "/" + imgName, cropped_raw_folder + "/"+ acquisiotionDate + "/" + imgName)
 
     destinationFile = cropped_ndvi_folder + "/" + acquisiotionDate + ".tiff"
     if ndvi:
