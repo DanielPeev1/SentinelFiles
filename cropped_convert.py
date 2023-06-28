@@ -12,7 +12,8 @@ import numpy as np
 
 
 # This script calculates the NDVI values and then crops the boundry and saves it into cropped_data_folder
-# The generated files have as a name the date the data was collected
+# The generated files have as a name the date the data was collected. This script unlike convert_data_s2 uses the cropped_raw_s2 data and not
+# the raw s2 images from sentinel
 
 dir = "./cropped-raw-s2"
 tempZip = "./unzip"
