@@ -58,7 +58,7 @@ labels_validation = labels [cutoff_point:]
 labels_validation_reshaped = []
 
 for label in labels_validation:
-    labels_validation_reshaped.append(label.reshape(labels_train [0].shape [0], labels_train [0].shape [1] * labels_train [0].shape[2]))
+    labels_validation_reshaped.append(label.reshape(labels_train [0].shape [1] * labels_train [0].shape[2], labels_train [0].shape [0] ))
 
 labels_validation_reshaped = np.array (labels_validation_reshaped)
 
@@ -67,11 +67,11 @@ labels_validation_reshaped = np.array (labels_validation_reshaped)
 #This first model is without pooling layers, which
 #might work since the images we will pass through it
 #have rather small dimensions
-
+print (input_train.shape)
 model = Sequential ([
-    Conv2D(filters = 32, kernel_size = (3, 3), activation = 'relu', padding = 'same', input_shape = (2, 120, 80)),
-    Conv2D(filters = 64, kernel_size = (3, 3), activation = 'relu', padding = 'same'),
-    Conv2D(filters = 256, kernel_size = (3, 3), activation = 'relu', padding = 'same'),
+    Conv2D(filters = 8, kernel_size = (3, 3), activation = 'sigmoid', padding = 'same', input_shape = (2, 120, 80)),
+    Conv2D(filters = 16, kernel_size = (3, 3), activation = 'sigmoid', padding = 'same'),
+    Conv2D(filters = 8, kernel_size = (3, 3), activation = 'sigmoid', padding = 'same'),
     Flatten(),
     Dense (units = labels_train [0].shape [1] * labels_train [0].shape[2], activation='sigmoid')])
 
@@ -82,4 +82,4 @@ print (model.summary())
 model.compile (optimizer = Adam(learning_rate = 0.001), loss='mean_squared_error', metrics = [tf.keras.metrics.RootMeanSquaredError()])
 
 #Fitting the model on the data and outputing the progress on each epoch
-model.fit (input_train, labels_train_reshaped, validation_data = (input_validation, labels_validation_reshaped), epochs = 5, verbose = 2)
+model.fit (input_train, labels_train_reshaped, validation_data = (input_validation, labels_validation_reshaped), epochs = 10, verbose = 2)
