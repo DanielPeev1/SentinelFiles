@@ -20,7 +20,7 @@ labels = []
 for i in dataset:
 
     datapoint = i ['x']
-    datapoint = np.resize (datapoint, (1, 225, 90))
+    datapoint = np.resize (datapoint, (225, 90, 1))
     input.append (datapoint)
     labels.append (i ['y'])
 
@@ -96,9 +96,9 @@ for i in range (0, k):
     #have rather small dimensions
 
     model = Sequential ([
-        Conv2D(filters = 16, kernel_size = (3, 3), activation = 'relu', padding = 'same', input_shape = (1, 225, 90)),
-        Conv2D(filters = 32, kernel_size = (3, 3), activation = 'relu', padding = 'same'),
-        Conv2D(filters = 128, kernel_size = (3, 3), activation = 'sigmoid', padding = 'same'),
+        Conv2D(filters = 8, kernel_size = (3, 3), activation = 'relu', padding = 'same', input_shape = (225, 90, 1)),
+        Conv2D(filters = 16, kernel_size = (3, 3), activation = 'relu', padding = 'same'),
+        Conv2D(filters = 4, kernel_size = (3, 3), activation = 'sigmoid', padding = 'same'),
         Flatten(),
         Dense (units = labels_train [0].shape [0] * labels_train [0].shape[1], activation='sigmoid')])
     #A summary of the model architecture
