@@ -96,10 +96,10 @@ for i in range (0, k):
     #have rather small dimensions
 
     model = Sequential ([
-        Conv2D(filters = 4, kernel_size = (3, 3), activation = 'relu', padding = 'same', input_shape = (225, 90, 1)),
-        Conv2D(filters = 8, kernel_size = (3, 3), activation = 'relu', padding = 'same'),
-        Conv2D(filters = 16, kernel_size = (3, 3), activation = 'sigmoid', padding = 'same'),
-        MaxPool2D (pool_size = (3, 3), strides = 3),
+        Conv2D(filters = 256, kernel_size = (3, 3), activation = 'relu', padding = 'same', input_shape = (225, 90, 1)),
+        Conv2D(filters = 64, kernel_size = (3, 3), activation = 'relu', padding = 'same'),
+        Conv2D(filters = 32, kernel_size = (3, 3), activation = 'sigmoid', padding = 'same'),
+        MaxPool2D (pool_size = (4, 4), strides = 4),
         Flatten(),
         Dense (units = labels_train [0].shape [0] * labels_train [0].shape[1], activation='sigmoid')])
     #A summary of the model architecture
@@ -109,7 +109,7 @@ for i in range (0, k):
     model.compile (optimizer = Adam(learning_rate = 0.0001), loss='mean_squared_error', metrics = [tf.keras.metrics.RootMeanSquaredError()])
 
     #Fitting the model on the data and outputing the progress on each epoch
-    model.fit (input_train, labels_train_reshaped, validation_data = (input_validation, labels_validation_reshaped), epochs = 10, verbose = 2)
+    model.fit (input_train, labels_train_reshaped, validation_data = (input_validation, labels_validation_reshaped), epochs = 5, verbose = 2)
 
     #Scoring the model on the test set
     print ("On the test set:")
