@@ -24,6 +24,8 @@ def addElement(sar, y, lastNDVIS2Data, path, dataset):
     sarVV = rasterio.open(path + "/" + sar[0]).read(1)
     sarVH = rasterio.open(path + "/" + sar[1]).read(1)
     x = np.array([sarVV, sarVH])
+    x = np.moveaxis(x, 1, 0)
+    x = np.moveaxis(x, 1, 2)
     dataset.append({
         "sarImage": x,
         "lastNDVI": lastNDVIS2Data,
