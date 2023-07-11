@@ -16,7 +16,7 @@ s1 = os.listdir(s1Folder)
 datasetDir = "./dataset"
 
 
-def addElement(id, sar, y, lastNDVIS2Data, path, dataset):
+def addElement(id, sar, y, lastNDVIS2Data, takenBefore, path, dataset):
     polarisation = sar[0][11:13] 
     if polarisation == "vh":
         sar[0], sar[1] = sar[1], sar[0]
@@ -30,6 +30,7 @@ def addElement(id, sar, y, lastNDVIS2Data, path, dataset):
         "id": id,
         "sarImage": x,
         "lastNDVI": lastNDVIS2Data,
+        "lastNDVITakenBefore": takenBefore,
         "y": y,
     })
 
@@ -53,6 +54,8 @@ for idx, ndvi in enumerate(ndviDates):
     else:
         lastNDVIDate = ndviDates[idx + 1]
 
+    lastNDVIDateTime = datetime.strptime(lastNDVIDate.split('.')[0], "%Y%m%d")
+    lastNDVITakenBefore = (date - lastNDVIDateTime).days
     lastDate = rasterio.open(ndviFolder + "/" + lastNDVIDate)
     lastNDVIData = lastDate.read(1)
 
@@ -66,9 +69,9 @@ for idx, ndvi in enumerate(ndviDates):
 
     if len(sarB) != 0:
         addElement("s1b-" + s1ClosestDateFolderName + "-" + ndviAcquisitionDate,
-                    sarB, y, lastNDVIData, s1ClosestDatePath, dataset)
+                    sarB, y, lastNDVIData, lastNDVITakenBefore, s1ClosestDatePath, dataset)
     if len(sarA) != 0:
         addElement("s1a-" + s1ClosestDateFolderName + "-" + ndviAcquisitionDate,
-                    sarA, y, lastNDVIData, s1ClosestDatePath, dataset)
+                    sarA, y, lastNDVIData, lastNDVITakenBefore, s1ClosestDatePath, dataset)
 
 np.save("./dataset", np.array(dataset))
