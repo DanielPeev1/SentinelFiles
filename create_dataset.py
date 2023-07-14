@@ -11,7 +11,7 @@ from datetime import datetime
 imageDelta = 4
 ndviFolder = "./cropped-ndvi-s2"
 ndviDates = os.listdir(ndviFolder)
-s1Folder = "./cropped-raw-s1"
+s1Folder = "./resized_cropped-s1"
 s1 = os.listdir(s1Folder)
 datasetDir = "./dataset"
 
@@ -20,16 +20,15 @@ def addElement(id, sar, y, lastNDVIS2Data, takenBefore, path, dataset):
     polarisation = sar[0][11:13] 
     if polarisation == "vh":
         sar[0], sar[1] = sar[1], sar[0]
-
+ 
     sarVV = rasterio.open(path + "/" + sar[0]).read(1)
     sarVH = rasterio.open(path + "/" + sar[1]).read(1)
-    x = np.array([sarVV, sarVH])
+    x = np.array([sarVV, sarVH, lastNDVIS2Data])
     x = np.moveaxis(x, 1, 0)
     x = np.moveaxis(x, 1, 2)
     dataset.append({
         "id": id,
         "sarImage": x,
-        "lastNDVI": lastNDVIS2Data,
         "lastNDVITakenBefore": takenBefore,
         "y": y,
     })
@@ -74,4 +73,4 @@ for idx, ndvi in enumerate(ndviDates):
         addElement("s1a-" + s1ClosestDateFolderName + "-" + ndviAcquisitionDate,
                     sarA, y, lastNDVIData, lastNDVITakenBefore, s1ClosestDatePath, dataset)
 
-np.save("./dataset", np.array(dataset))
+np.save("./dataset-resized", np.array(dataset))
