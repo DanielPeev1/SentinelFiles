@@ -11,14 +11,13 @@ from datetime import datetime
 imageDelta = 4
 ndviFolder = "./cropped-ndvi-s2"
 ndviDates = os.listdir(ndviFolder)
-s1Folder = "./resized_cropped-s1"
+s1Folder = "./LeeSigma-resized"
 s1 = os.listdir(s1Folder)
 datasetDir = "./dataset"
 
 
 def addElement(id, sar, y, lastNDVIS2Data, takenBefore, path, dataset):
-    polarisation = sar[0][11:13] 
-    if polarisation == "vh":
+    if "vh" in sar[0]:
         sar[0], sar[1] = sar[1], sar[0]
  
     sarVV = rasterio.open(path + "/" + sar[0]).read(1)
@@ -63,8 +62,8 @@ for idx, ndvi in enumerate(ndviDates):
 
     s1ClosestDatePath = s1Folder + "/" + s1ClosestDateFolderName
     sarFiles =  os.listdir(s1ClosestDatePath) 
-    sarA = list(filter(lambda x: "s1a" in x, sarFiles))
-    sarB = list(filter(lambda x: "s1b" in x, sarFiles))
+    sarA = list(filter(lambda x: "s1a" in x.lower(), sarFiles))
+    sarB = list(filter(lambda x: "s1b" in x.lower(), sarFiles))
 
     if len(sarB) != 0:
         addElement("s1b-" + s1ClosestDateFolderName + "-" + ndviAcquisitionDate,
@@ -73,4 +72,4 @@ for idx, ndvi in enumerate(ndviDates):
         addElement("s1a-" + s1ClosestDateFolderName + "-" + ndviAcquisitionDate,
                     sarA, y, lastNDVIData, lastNDVITakenBefore, s1ClosestDatePath, dataset)
 
-np.save("./dataset-resized", np.array(dataset))
+np.save("./dataset-lee-sigma", np.array(dataset))
