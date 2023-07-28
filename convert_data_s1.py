@@ -14,25 +14,28 @@ import numpy as np
 # This script calculates the NDVI values and then crops the boundry and saves it into cropped_data_folder
 # The generated files have as a name the date the data was collected
 
-dir = "./data-s1"
+dir = "./LeeSigma-s1-raw"
 tempZip = "./unzip"
 boundry = "./farm.geojson"
-cropped_raw_folder = "./cropped-raw-s1"
-tempFile = "temp.tiff"
-ndvi = True
+dest_folder = "./LeeSigma-s1"
+fromZippedRaw = False
+#'epsg:4326'
+coordinateSystem = 'epsg:32635'
 
 fileNames = os.listdir(dir)
-eps = 1e-5
-
 
 def crop(sourceFileName, destinationFile):
     # boundary for the field in Varna
     boundary = gpd.read_file(boundry)
-    bound_crs = boundary.to_crs('epsg:4326')
+    bound_crs = boundary.to_crs(coordinateSystem)
     with rasterio.open(sourceFileName, "r+") as src:
 
-        gcps, gcp_crs = src.gcps
-        affine_transform = rasterio.transform.from_gcps(gcps)
+        if src.gcps[1] != None:
+            gcps, gcp_crs = src.gcps
+            affine_transform = rasterio.transform.from_gcps(gcps)
+        else:
+            gcp_crs = src.crs
+            affine_transform = src.transform
         src.crs = gcp_crs
         src.transform = affine_transform
         # uses the boundary and source image to crop the field
@@ -51,19 +54,29 @@ def extract(fileName, dir):
         zip.extractall(dir)
     zip.close()
 
-for fileName in tqdm(fileNames):
+def convertFromZippedRaw(fileName):
     zipFileName = dir + "/" + fileName
     extract(zipFileName, tempZip)
     acquisiotionDate = fileName[17:25]
     fileName = tempZip + "/" + fileName.split('.')[0] + ".SAFE"
     measurements = fileName + "/measurement"
-    destinationDir = cropped_raw_folder + "/" + acquisiotionDate
+    destinationPath = dest_folder + "/" + acquisiotionDate
     measurementsFiles = os.listdir(measurements)
-    if not os.path.exists(destinationDir):
-        os.mkdir(destinationDir)
+    if not os.path.exists(destinationPath):
+        os.mkdir(destinationPath)
 
     for m in measurementsFiles:
-        crop(measurements + "/" + m, destinationDir + "/" + m)
+        crop(measurements + "/" + m, destinationPath + "/" + m)
     
     shutil.rmtree(fileName)
 
+for fileName in tqdm(fileNames):
+    if fromZippedRaw:
+        convertFromZippedRaw(fileName)
+    else:
+        satFiles = os.listdir(dir + "/" + fileName)
+        destinationPath = dest_folder + "/" + fileName
+        if not os.path.exists(destinationPath):
+            os.mkdir(destinationPath)
+        for satFile in satFiles:
+            crop(dir + "/" + fileName + "/" + satFile, destinationPath + "/" + satFile)

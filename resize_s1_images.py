@@ -37,16 +37,17 @@ def convert(src, ndvi, destinationFile):
                     resampling=Resampling.nearest)
 
 
-rawDir = "./cropped-raw-s1/"
+rawDir = "./LeeSigma-s1/"
 dateFiles = os.listdir(rawDir)
+resizedDir = "./LeeSigma-resized/"
 
-ndvi = rasterio.open("./cropped-ndvi-s2/20210115.tiff")
+ndvi = rasterio.open("./cropped-ndvi-s2/20230102.tiff")
 
 for dateFile in dateFiles:
     images = os.listdir(rawDir + dateFile)
     for img in images:
         sarImg = rasterio.open(rawDir + dateFile + "/" + img, 'r')
-        if not os.path.exists("./resized_cropped-s1/" + dateFile):
-            os.mkdir("./resized_cropped-s1/" + dateFile)
-        convert(sarImg, ndvi, "./resized_cropped-s1/" + dateFile + "/" + img)
+        if not os.path.exists(resizedDir + dateFile):
+            os.mkdir(resizedDir + dateFile)
+        convert(sarImg, ndvi, resizedDir + dateFile + "/" + img)
 
